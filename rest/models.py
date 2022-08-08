@@ -1,5 +1,7 @@
 from django.db import models
 
+from custom_auth.models import MyUser
+
 
 class Category(models.Model):
     """Категории"""
@@ -54,43 +56,25 @@ class Sale(models.Model):
         verbose_name_plural = 'Акции'
 
 
-# WEEKDAYS = [
-#         (1, "Monday"),
-#         (2, "Tuesday"),
-#         (3, "Wednesday"),
-#         (4, "Thursday"),
-#         (5, "Friday"),
-#         (6, "Saturday"),
-#         (7, "Sunday"),
-#     ]
-#
-#
-# class OpenningTime(models.Model):
-#
-#     weekday = models.IntegerField(
-#         choices=WEEKDAYS,
-#         unique=True)
-#     from_hour = models.TimeField()
-#     to_hour = models.TimeField()
-
-
 class Restaurant(models.Model):
     """Все заведения"""
     name = models.CharField('Название', max_length=255)
     description = models.TextField('Описание')
-    image = models.ImageField('Изображения', upload_to='image_restaurant/')
+    # image = models.ImageField('Изображения', upload_to='image_restaurant/')
     phone_number_1 = models.CharField('Номер телефона', max_length=15)
     phone_number_2 = models.CharField('Номер телефона', max_length=15, blank=True, null=True)
     phone_number_3 = models.CharField('Номер телефона', max_length=15, blank=True, null=True)
     address = models.CharField('Местоположение', max_length=255)
-
-    # openning_times = models.ManyToManyField(OpenningTime, verbose_name='Время работы')
-
-    menu_image = models.ImageField('Меню', upload_to='menu_restaurant/')
-    selections = models.ForeignKey(Selection, verbose_name='Подборка', on_delete=models.SET_NULL, null=True)
-    category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.SET_NULL, null=True)
-    sale = models.ForeignKey(Sale, verbose_name='Акция', on_delete=models.SET_NULL, null=True)
-    review = models.ForeignKey('Review', related_name='Отзыв', verbose_name='Отзыв', on_delete=models.SET_NULL, null=True)
+    openning_times = models.CharField('Время работы', max_length=255)
+    # menu_image = models.ImageField('Меню', upload_to='menu_restaurant/')
+    selections = models.ForeignKey(Selection, verbose_name='Подборка', on_delete=models.SET_NULL,
+                                   blank=True, null=True)
+    category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.SET_NULL,
+                                 null=True)
+    sale = models.ForeignKey(Sale, verbose_name='Акция', on_delete=models.SET_NULL,
+                             blank=True, null=True)
+    review = models.ForeignKey('Review', related_name='Отзыв', verbose_name='Отзыв',
+                               on_delete=models.SET_NULL, blank=True, null=True)
     url = models.SlugField('Ссылка', max_length=160, unique=True)
 
     def clean(self):
@@ -104,12 +88,16 @@ class Restaurant(models.Model):
         verbose_name_plural = 'Рестораны'
 
 
+class Image(models.Model):
+    image = models.ImageField('Изображения', upload_to='image_restaurant/')
+    restaurant = models.ForeignKey(Restaurant, related_name='image', verbose_name='Фото',
+                                   on_delete=models.SET_NULL, null=True)
+
+
 class Review(models.Model):
     """Отзывы"""
-    email = models.EmailField('Почта')
-    name = models.CharField('Имя', max_length=100)
-    text = models.TextField('Сообщение', max_length=5000)
-    parent = models.ForeignKey('self', verbose_name='Родитель', on_delete=models.SET_NULL, blank=True, null=True)
+    user = models.ForeignKey(MyUser, on_delete=models.SET_NULL, null=True)
+    text = models.TextField('Сообщение')
     restaurant = models.ForeignKey(Restaurant, related_name='Ресторан', on_delete=models.CASCADE)
 
     def clean(self):
