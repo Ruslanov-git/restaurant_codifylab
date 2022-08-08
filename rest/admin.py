@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.contrib.admin.options import TabularInline
-from rest.models import Category, Selection, Sale, Restaurant, RestaurantImage
+from rest.models import Category, Selection, Sale, Restaurant, Image
 
 
 class RestaurantImageAdminInline(TabularInline):
     extra = 0
-    model = RestaurantImage
+    model = Image
     max_num = 100
 
 

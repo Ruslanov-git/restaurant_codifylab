@@ -1,5 +1,7 @@
 from django.db import models
 
+from custom_auth.models import MyUser
+
 
 class Category(models.Model):
     """Категории"""
@@ -86,17 +88,16 @@ class Restaurant(models.Model):
         verbose_name_plural = 'Рестораны'
 
 
-class RestaurantImage(models.Model):
+class Image(models.Model):
     image = models.ImageField('Изображения', upload_to='image_restaurant/')
-    restaurant = models.ForeignKey(Restaurant, related_name='Фото', verbose_name='Фото',
+    restaurant = models.ForeignKey(Restaurant, related_name='image', verbose_name='Фото',
                                    on_delete=models.SET_NULL, null=True)
 
 
 class Review(models.Model):
     """Отзывы"""
-    email = models.EmailField('Почта')
-    name = models.CharField('Имя', max_length=100)
-    text = models.TextField('Сообщение', max_length=5000)
+    user = models.ForeignKey(MyUser, on_delete=models.SET_NULL, null=True)
+    text = models.TextField('Сообщение')
     restaurant = models.ForeignKey(Restaurant, related_name='Ресторан', on_delete=models.CASCADE)
 
     def clean(self):

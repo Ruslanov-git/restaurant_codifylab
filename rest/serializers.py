@@ -8,6 +8,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = '__all__'
         extra_kwargs = {
+            'user': {'read_only': True},
             'restaurant': {'read_only': True}
         }
 
@@ -17,7 +18,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['name', ]
+        fields = ['name', 'rest_count', ]
 
 
 class SelectionSerializer(serializers.ModelSerializer):
@@ -36,17 +37,20 @@ class SaleSerializer(serializers.ModelSerializer):
 
 
 class RestaurantSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(read_only=True)
 
     class Meta:
         model = Restaurant
-        fields = ['name', 'image', 'phone_number_1',
+        fields = ['id', 'name', 'image', 'phone_number_1',
                   'address', ]
 
 
 class RestaurantDetailSerializer(serializers.ModelSerializer):
-    reviews = ReviewSerializer(many=True)
+    image = serializers.ImageField(read_only=True)
+    menu_image = serializers.ImageField(read_only=True)
+    review = ReviewSerializer(many=True)
 
     class Meta:
         model = Restaurant
-        fields = ['name', 'description', 'image', 'phone_number_1', 'phone_number_2', 'phone_number_3',
-                  'address', 'openning_times', 'menu_image', 'reviews', ]
+        fields = ['id', 'name', 'description', 'image', 'phone_number_1', 'phone_number_2', 'phone_number_3',
+                  'address', 'openning_times', 'menu_image', 'review', ]
